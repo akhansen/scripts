@@ -4,7 +4,7 @@
 #
 # Fink - a package manager that downloads source and installs it
 # Copyright (c) 2001 Christoph Pfisterer
-# Copyright (c) 2001-2012 The Fink Package Manager Team
+# Copyright (c) 2001-2013 The Fink Package Manager Team
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -74,7 +74,7 @@ my $tmpdir = shift || "/tmp";
 my $tag = shift;
 
 #my $gitroot='git@github.com:fink/';
-my $github_url="https://github.com/fink/$module/tarball";
+my $github_url="https://codeload.github.com/fink/$module/legacy.tar.gz";
 my $cvsroot=':pserver:anonymous@fink.cvs.sourceforge.net:/cvsroot/fink';
 my $distribution = "10.4";  #default value
 
@@ -123,8 +123,7 @@ print "Exporting module $module, tag $tag from $vcstype:\n";
 
 
 if ($vcstype eq 'github') {
-	# Why doesn't this work with curl? (using '-o' instead of '-O') 
-	system("umask 022; wget $github_url/$tag -O $tmpdir/$tag.tar.gz");
+	system("umask 022; curl -L -f $github_url/$tag -o $tmpdir/$tag.tar.gz");
 
 	if ($? or not -f "$tmpdir/$tag.tar.gz") {
 		print "github download failed, could not retrieve remote data!\n";
@@ -212,34 +211,44 @@ print `ls -l $tmpdir/*.tar.gz` . "\n";
 
 ### create package description files
 
+#Refreshed coda with current SF.net mirrors as of 14 April 2014
 my $coda = <<CODA;
 CustomMirror: <<
-Primary: http://downloads.sourceforge.net/
-nam-US: http://voxel.dl.sourceforge.net/sourceforge/
-asi-JP: http://jaist.dl.sourceforge.net/sourceforge/
-asi-TW: http://nchc.dl.sourceforge.net/sourceforge/
-aus-AU: http://internode.dl.sourceforge.net/sourceforge/
-aus-AU: http://transact.dl.sourceforge.net/sourceforge/
-aus-AU: http://waix.dl.sourceforge.net/sourceforge/
-eur-CH: http://puzzle.dl.sourceforge.net/sourceforge/
-eur-CH: http://switch.dl.sourceforge.net/sourceforge/
-eur-DE: http://dfn.dl.sourceforge.net/sourceforge/
-eur-DE: http://mesh.dl.sourceforge.net/sourceforge/
-eur-FR: http://ovh.dl.sourceforge.net/sourceforge/
-eur-IE: http://heanet.dl.sourceforge.net/sourceforge/
-eur-IT: http://garr.dl.sourceforge.net/sourceforge/
-eur-NL: http://surfnet.dl.sourceforge.net/sourceforge/
-eur-UK: http://kent.dl.sourceforge.net/sourceforge/
-sam-BR: http://ufpr.dl.sourceforge.net/sourceforge/
+Primary: http://downloads.sourceforge.net
+afr-ZA: http://tenet.dl.sourceforge.net/sourceforge
+asi-JP: http://jaist.dl.sourceforge.net/sourceforge
+asi-KZ: http://kaz.dl.sourceforge.net/sourceforge
+asi-SG: http://softlayer-sng.dl.sourceforge.net/sourceforge
+asi-TW: http://nchc.dl.sourceforge.net/sourceforge
+asi-TW: http://ncu.dl.sourceforge.net/sourceforge
+aus-AU: http://aarnet.dl.sourceforge.net/sourceforge
+aus-AU: http://internode.dl.sourceforge.net/sourceforge
+aus-AU: http://waia.dl.sourceforge.net/sourceforge
+eur-CH: http://switch.dl.sourceforge.net/sourceforge
+eur-CZ: http://cznic.dl.sourceforge.net/sourceforge
+eur-CZ: http://ignum.dl.sourceforge.net/sourceforge
+eur-DE: http://netcologne.dl.sourceforge.net/sourceforge
+eur-DE: http://optimate.dl.sourceforge.net/sourceforge
+eur-DE: http://skylink.dl.sourceforge.net/sourceforge
+eur-FR: http://freefr.dl.sourceforge.net/sourceforge
+eur-IE: http://heanet.dl.sourceforge.net/sourceforge
+eur-IT: http://garr.dl.sourceforge.net/sourceforge
+eur-RU: http://citylan.dl.sourceforge.net/sourceforge
+eur-SE: http://sunet.dl.sourceforge.net/sourceforge
+eur-UK: http://kent.dl.sourceforge.net/sourceforge
+eur-UK: http://vorboss.dl.sourceforge.net/sourceforge
+nam-CA: http://iweb.dl.sourceforge.net/sourceforge
+nam-US: http://colocrossing.dl.sourceforge.net/sourceforge
+nam-US: http://downloads.sourceforge.net
+nam-US: http://hivelocity.dl.sourceforge.net/sourceforge
+nam-US: http://softlayer-ams.dl.sourceforge.net/sourceforge
+nam-US: http://softlayer-dal.dl.sourceforge.net/sourceforge
+nam-US: http://superb-dca2.dl.sourceforge.net/sourceforge
+nam-US: http://superb-dca3.dl.sourceforge.net/sourceforge
+nam-US: http://tcpdiag.dl.sourceforge.net/sourceforge
+sam-BR: http://ufpr.dl.sourceforge.net/sourceforge
 <<
 CODA
-
-# my $coda = "CustomMirror: <<\n";
-# $coda .= " Primary: http://superb-west.dl.sourceforge.net/sourceforge/\n";
-# $coda .= " Secondary: http://easynews.dl.sourceforge.net/sourceforge/\n";
-# $coda .= " nam-US: http://superb-west.dl.sourceforge.net/sourceforge/\n";
-# $coda .= " eur: http://eu.dl.sourceforge.net/sourceforge/\n";
-# $coda .= "<<\n";
 
 my ($packageversion, $revisions) = read_version_revision("$tmpdir/$fullname");
 
